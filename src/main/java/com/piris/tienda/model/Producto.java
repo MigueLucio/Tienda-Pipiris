@@ -42,13 +42,13 @@ public class Producto implements Serializable{
 	private Publico publico;
 	
 	private String nombreImagen;
-	
-	@NotNull
-	private double precioUnitario;
-	
+
 	@NotBlank
 	@Column(unique = true)
 	private String codigoBarra;
+	
+	@NotNull
+	private double precioUnitario;
 	
 	@ManyToOne
 	@JoinColumn(name = "categoria_id")

@@ -33,9 +33,11 @@ public class Venta implements Serializable{
 	
 	private LocalDateTime fechaVenta;
 	
-	private double totalPrecio;
+	private double precioTotal;
 
 	private String estado;
+	
+	private String tipoPago;
 	
 	private boolean ventaConComprobante;
 	

@@ -32,4 +32,13 @@ public class InventarioId {
 				&& Objects.equals(talla, other.talla);
 	}
 
+	public InventarioId(Long productoId, String talla, String color) {
+		this.productoId = productoId;
+		this.talla = talla;
+		this.color = color;
+	}
+
+	public InventarioId() {
+	}
+	
 }
