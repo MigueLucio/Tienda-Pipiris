@@ -1,6 +1,7 @@
 package com.piris.tienda.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.piris.tienda.enumP.Publico;
@@ -48,7 +49,7 @@ public class Producto implements Serializable{
 	private String codigoBarra;
 	
 	@NotNull
-	private double precioUnitario;
+	private BigDecimal precioUnitario;
 	
 	@ManyToOne
 	@JoinColumn(name = "categoria_id")

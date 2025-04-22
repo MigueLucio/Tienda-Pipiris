@@ -31,7 +31,9 @@ public class InventarioController {
 
     @GetMapping("/producto/{productoId}")
     public ResponseEntity<List<Inventario>> listarInventariosDeProducto(@PathVariable Long productoId) {
+    	
         return ResponseEntity.ok(inventarioService.getInventariosDeProducto(productoId));
+    
     }
 
     @GetMapping
@@ -39,7 +41,9 @@ public class InventarioController {
         @RequestParam Long productoId,
         @RequestParam String talla,
         @RequestParam String color) {
+    	
         return ResponseEntity.ok(inventarioService.getInventario(productoId, talla, color));
+    
     }
 
     @PatchMapping("/stock")
@@ -48,12 +52,16 @@ public class InventarioController {
         @RequestParam String talla,
         @RequestParam String color,
         @RequestParam int stock) {
+    	
         return ResponseEntity.ok(inventarioService.actualizarStock(productoId, talla, color, stock));
+    
     }
 
     @PostMapping
     public ResponseEntity<Inventario> crearInventario(@RequestBody @Valid Inventario inventario) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(inventarioService.crearInventario(inventario));
+        
+    	return ResponseEntity.status(HttpStatus.CREATED).body(inventarioService.crearInventario(inventario));
+    
     }
 
     @DeleteMapping
@@ -61,8 +69,10 @@ public class InventarioController {
         @RequestParam Long productoId,
         @RequestParam String talla,
         @RequestParam String color) {
+    	
         inventarioService.eliminarInventario(productoId, talla, color);
         return ResponseEntity.noContent().build();
+        
     }
 
 }

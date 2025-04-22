@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.piris.tienda.dto.ProductoRequestDTO;
+import com.piris.tienda.dto.ProductoResponseDTO;
 import com.piris.tienda.model.Producto;
 import com.piris.tienda.service.ProductoService;
 
@@ -30,35 +32,35 @@ public class ProductoController {
 	}
 	
 	@GetMapping
-	public ResponseEntity<List<Producto>> listarProductos(){
+	public ResponseEntity<List<ProductoResponseDTO>> listarProductos(){
 		
 		return ResponseEntity.ok(productoService.getAll());
 		
 	}
 	
 	@GetMapping("/{idProducto}")
-	public ResponseEntity<Producto> obtenerById(@PathVariable Long idProducto){
+	public ResponseEntity<ProductoResponseDTO> obtenerById(@PathVariable Long idProducto){
 		
 		return ResponseEntity.ok(productoService.getById(idProducto));
 		
 	}
 	
 	@PostMapping
-	public ResponseEntity<Producto> crear(@RequestBody @Valid Producto producto){
+	public ResponseEntity<ProductoResponseDTO> crear(@RequestBody @Valid ProductoRequestDTO productoRequestDTO){
 		
-		return ResponseEntity.status(HttpStatus.CREATED).body(productoService.create(producto));
+		return ResponseEntity.status(HttpStatus.CREATED).body(productoService.create(productoRequestDTO));
 		
 	}
 	
 	@PutMapping("/{idProducto}")
-	public ResponseEntity<Producto> editar(@PathVariable Long idProducto, @RequestBody @Valid Producto producto){
+	public ResponseEntity<ProductoResponseDTO> editar(@PathVariable Long idProducto, @RequestBody @Valid ProductoRequestDTO productoRequestDTO){
 		
-		return ResponseEntity.ok(productoService.update(idProducto, producto));
+		return ResponseEntity.ok(productoService.update(idProducto, productoRequestDTO));
 		
 	}
 	
 	@DeleteMapping("/{idProducto}")
-	public ResponseEntity<Producto> eliminar(@PathVariable Long idProducto){
+	public ResponseEntity<ProductoResponseDTO> eliminar(@PathVariable Long idProducto){
 		
 		productoService.delete(idProducto);
 		return ResponseEntity.noContent().build();
@@ -66,12 +68,11 @@ public class ProductoController {
 	}
 	
 	@GetMapping("/search")
-	public ResponseEntity<List<Producto>> buscarProductoByModelo(@RequestParam String modelo){
+	public ResponseEntity<List<ProductoResponseDTO>> buscarProductoByModelo(@RequestParam String modelo){
 		
-		List<Producto> productos = productoService.getProductoByModelo(modelo);
+		List<ProductoResponseDTO> productos = productoService.getProductoByModelo(modelo);
 		return ResponseEntity.ok(productos);
 		
 	}
 	
-
 }
