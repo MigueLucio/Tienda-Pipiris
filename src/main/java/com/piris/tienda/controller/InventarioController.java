@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.piris.tienda.dto.InventarioRequestDTO;
+import com.piris.tienda.dto.InventarioResponseDTO;
 import com.piris.tienda.model.Inventario;
 import com.piris.tienda.service.InventarioService;
 
@@ -58,9 +60,9 @@ public class InventarioController {
     }
 
     @PostMapping
-    public ResponseEntity<Inventario> crearInventario(@RequestBody @Valid Inventario inventario) {
+    public ResponseEntity<InventarioResponseDTO> crearInventario(@RequestBody @Valid InventarioRequestDTO inventarioRequestDTO) {
         
-    	return ResponseEntity.status(HttpStatus.CREATED).body(inventarioService.crearInventario(inventario));
+    	return ResponseEntity.status(HttpStatus.CREATED).body(inventarioService.crearInventario(inventarioRequestDTO));
     
     }
 

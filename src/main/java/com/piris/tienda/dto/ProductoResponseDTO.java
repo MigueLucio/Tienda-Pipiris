@@ -10,12 +10,13 @@ import lombok.Data;
 public class ProductoResponseDTO {
 
 	private Long idProducto;
+	private String categoria;
 	private String modelo;
+	private String marca;
 	private Publico publico;
 	private String nombreImagen;
 	private String codigoBarra;
 	private BigDecimal precioUnitario;
-	private String categoria;
-	private String marca;
+	
 	
 }

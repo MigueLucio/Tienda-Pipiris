@@ -39,4 +39,24 @@ public class Inventario {
 	@DecimalMin("0.0")
 	private Double precioExtra;
 	
+	//Metodo factory
+	public static Inventario of(Producto producto, String talla, String color, int stock) {
+		
+		Inventario inv = new Inventario();
+		inv.id = new InventarioId(producto.getIdProducto(),talla,color);
+		inv.producto = producto;
+		inv.stock = stock;
+		inv.ultimaActualizacion = LocalDateTime.now();
+		return inv;
+		
+	}
+	
+	//comportamiento
+	public void actualizarStock(int nuevoStock) {
+	
+		this.stock = nuevoStock;
+		this.ultimaActualizacion = LocalDateTime.now();
+		
+	}
+	
 }

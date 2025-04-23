@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.piris.tienda.dto.ProductoRequestDTO;
 import com.piris.tienda.dto.ProductoResponseDTO;
-import com.piris.tienda.model.Producto;
 import com.piris.tienda.service.ProductoService;
 
 import jakarta.validation.Valid;

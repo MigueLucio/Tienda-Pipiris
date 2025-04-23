@@ -5,6 +5,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.piris.tienda.dto.InventarioRequestDTO;
+import com.piris.tienda.dto.InventarioResponseDTO;
+import com.piris.tienda.mapper.InventarioMapper;
+import com.piris.tienda.mapper.InventarioMapperImpl;
 import com.piris.tienda.model.Inventario;
 import com.piris.tienda.model.InventarioId;
 import com.piris.tienda.model.Producto;
@@ -19,41 +23,46 @@ import jakarta.transaction.Transactional;
 @Transactional
 public class InventarioServiceImpl implements InventarioService{
 
-	private final InventarioRepository inventarioRepository;
-	private final ProductoRepository productoRepository;
+    private final InventarioMapperImpl inventarioMapperImpl;
+
+	private final InventarioRepository inventarioRepo;
+	private final ProductoRepository productoRepo;
+	private final InventarioMapper inventarioMapper;
 	
-	public InventarioServiceImpl(InventarioRepository inventarioRepository, ProductoRepository productoRepository) {
-		this.inventarioRepository = inventarioRepository;
-		this.productoRepository = productoRepository;
+	public InventarioServiceImpl(InventarioRepository inventarioRepo, ProductoRepository productoRepo,
+			InventarioMapper inventarioMapper, InventarioMapperImpl inventarioMapperImpl) {
+		this.inventarioRepo = inventarioRepo;
+		this.productoRepo = productoRepo;
+		this.inventarioMapper = inventarioMapper;
+		this.inventarioMapperImpl = inventarioMapperImpl;
 	}
-	
-	
+
 	@Override
 	public List<Inventario> getInventariosDeProducto(Long productoId) {
 		
-		return inventarioRepository.findByIdProductoId(productoId);
+		return inventarioRepo.findByIdProductoId(productoId);
 		
 	}
 
 	@Override
 	public Inventario getInventario(Long productoId, String talla, String color) {
 
-		return inventarioRepository.findByIdProductoIdAndIdTallaAndIdColor(productoId, talla, color)
+		return inventarioRepo.findByIdProductoIdAndIdTallaAndIdColor(productoId, talla, color)
 	            .orElseThrow(() -> new EntityNotFoundException("Inventario no encontrado"));
 	}
 
 	@Override
-	public Inventario crearInventario(Inventario inventario) {
+	public InventarioResponseDTO crearInventario(InventarioRequestDTO requestDTO) {
 		
-		Long productoId = inventario.getProducto().getIdProducto();
-		
-		Producto producto = productoRepository.findById(productoId)
+		Producto p = productoRepo.findById(requestDTO.getProductoId())
 				.orElseThrow(() -> new EntityNotFoundException("Producto no encontrado"));
 		
-		inventario.setProducto(producto);
-		inventario.setUltimaActualizacion(LocalDateTime.now());
 		
-		return inventarioRepository.save(inventario);
+		Inventario inv = Inventario.of(p, requestDTO.getTalla(), requestDTO.getColor(), requestDTO.getStock());
+		
+		Inventario creado = inventarioRepo.save(inv);
+		
+		return inventarioMapper.enDTO(creado);
 		
 	}
 	
@@ -63,7 +72,7 @@ public class InventarioServiceImpl implements InventarioService{
 		Inventario inventario = getInventario(productoId, talla, color);
         inventario.setStock(nuevoStock);
         inventario.setUltimaActualizacion(LocalDateTime.now());
-        return inventarioRepository.save(inventario);
+        return inventarioRepo.save(inventario);
         
 	}
 
@@ -71,7 +80,7 @@ public class InventarioServiceImpl implements InventarioService{
 	public void eliminarInventario(Long productoId, String talla, String color) {
 		
 		InventarioId id = new InventarioId(productoId, talla, color);
-        inventarioRepository.deleteById(id);
+        inventarioRepo.deleteById(id);
 		
 	}
 
