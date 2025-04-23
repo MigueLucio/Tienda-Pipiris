@@ -2,14 +2,16 @@ package com.piris.tienda.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.piris.tienda.dto.ProductoSimpleResponseDTO;
+import com.piris.tienda.dto.inventario.InventarioPorProductoDTO;
 import com.piris.tienda.dto.inventario.InventarioRequestDTO;
 import com.piris.tienda.dto.inventario.InventarioResponseDTO;
+import com.piris.tienda.dto.inventario.InventarioVarianteDTO;
 import com.piris.tienda.mapper.InventarioMapper;
-import com.piris.tienda.mapper.InventarioMapperImpl;
+import com.piris.tienda.mapper.ProductoMapper;
 import com.piris.tienda.model.Inventario;
 import com.piris.tienda.model.InventarioId;
 import com.piris.tienda.model.Producto;
@@ -27,22 +29,40 @@ public class InventarioServiceImpl implements InventarioService{
 	private final InventarioRepository inventarioRepo;
 	private final ProductoRepository productoRepo;
 	private final InventarioMapper inventarioMapper;
+	private final ProductoMapper productoMapper;
 	
 	public InventarioServiceImpl(InventarioRepository inventarioRepo, ProductoRepository productoRepo,
-			InventarioMapper inventarioMapper) {
+			InventarioMapper inventarioMapper, ProductoMapper productoMapper) {
 		this.inventarioRepo = inventarioRepo;
 		this.productoRepo = productoRepo;
 		this.inventarioMapper = inventarioMapper;
+		this.productoMapper = productoMapper;
 	}
 
 	@Override
-	public List<InventarioResponseDTO> getInventariosDeProducto(Long productoId) {
+	public InventarioPorProductoDTO getInventariosDeProducto(Long productoId) {
 		
-		List<Inventario> inventarios = inventarioRepo.findByIdProductoId(productoId);
-		return	inventarios.stream()
-				.map(inventarioMapper::enDTO)
-				.collect(Collectors.toList());
-				
+		List<Inventario> invs = inventarioRepo.findByIdProductoId(productoId);
+		
+		if(invs.isEmpty()) throw new EntityNotFoundException("No hay inventario para el producto con id " + productoId );
+		
+		ProductoSimpleResponseDTO prodDTO = productoMapper.enSimpleDTO(invs.get(0).getProducto());
+		
+		List<InventarioVarianteDTO> variants = invs.stream().map(inv -> {
+			InventarioVarianteDTO v = new InventarioVarianteDTO();
+			v.setTalla(inv.getId().getTalla());
+			v.setColor(inv.getId().getColor());
+			v.setStock(inv.getStock());
+			v.setUltimaActualizacion(inv.getUltimaActualizacion());
+			return v;
+		}).toList();
+		
+		InventarioPorProductoDTO wrapper = new InventarioPorProductoDTO();
+		wrapper.setProducto(prodDTO);
+		wrapper.setInventario(variants);
+		
+		return wrapper;
+		
 	}
 
 	@Override

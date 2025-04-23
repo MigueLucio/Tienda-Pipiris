@@ -1,6 +1,5 @@
 package com.piris.tienda.controller;
 
-import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.piris.tienda.dto.inventario.InventarioPorProductoDTO;
 import com.piris.tienda.dto.inventario.InventarioRequestDTO;
 import com.piris.tienda.dto.inventario.InventarioResponseDTO;
-import com.piris.tienda.model.Inventario;
 import com.piris.tienda.service.InventarioService;
 
 import jakarta.validation.Valid;
@@ -32,7 +31,7 @@ public class InventarioController {
     }
 
     @GetMapping("/producto/{productoId}")
-    public ResponseEntity<List<InventarioResponseDTO>> listarInventariosDeProducto(@PathVariable Long productoId) {
+    public ResponseEntity<InventarioPorProductoDTO> listarInventariosDeProducto(@PathVariable Long productoId) {
     	
         return ResponseEntity.ok(inventarioService.getInventariosDeProducto(productoId));
     
