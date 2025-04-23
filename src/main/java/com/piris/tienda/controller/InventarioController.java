@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.piris.tienda.dto.InventarioRequestDTO;
-import com.piris.tienda.dto.InventarioResponseDTO;
+import com.piris.tienda.dto.inventario.InventarioRequestDTO;
+import com.piris.tienda.dto.inventario.InventarioResponseDTO;
 import com.piris.tienda.model.Inventario;
 import com.piris.tienda.service.InventarioService;
 
@@ -32,14 +32,14 @@ public class InventarioController {
     }
 
     @GetMapping("/producto/{productoId}")
-    public ResponseEntity<List<Inventario>> listarInventariosDeProducto(@PathVariable Long productoId) {
+    public ResponseEntity<List<InventarioResponseDTO>> listarInventariosDeProducto(@PathVariable Long productoId) {
     	
         return ResponseEntity.ok(inventarioService.getInventariosDeProducto(productoId));
     
     }
 
     @GetMapping
-    public ResponseEntity<Inventario> obtenerInventario(
+    public ResponseEntity<InventarioResponseDTO> obtenerInventario(
         @RequestParam Long productoId,
         @RequestParam String talla,
         @RequestParam String color) {
@@ -49,7 +49,7 @@ public class InventarioController {
     }
 
     @PatchMapping("/stock")
-    public ResponseEntity<Inventario> actualizarStock(
+    public ResponseEntity<InventarioResponseDTO> actualizarStock(
         @RequestParam Long productoId,
         @RequestParam String talla,
         @RequestParam String color,

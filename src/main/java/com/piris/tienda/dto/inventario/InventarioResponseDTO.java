@@ -1,14 +1,15 @@
-package com.piris.tienda.dto;
+package com.piris.tienda.dto.inventario;
 
 import java.time.LocalDateTime;
+
+import com.piris.tienda.dto.ProductoSimpleResponseDTO;
 
 import lombok.Data;
 
 @Data
 public class InventarioResponseDTO {
 
-	 private Long productoId;
-	 private String modeloProducto;
+	 private ProductoSimpleResponseDTO producto;
 	 private String talla;
 	 private String color;
 	 private int stock;

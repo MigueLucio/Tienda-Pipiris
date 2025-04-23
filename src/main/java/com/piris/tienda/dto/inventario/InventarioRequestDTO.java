@@ -1,4 +1,4 @@
-package com.piris.tienda.dto;
+package com.piris.tienda.dto.inventario;
 
 import lombok.Data;
 

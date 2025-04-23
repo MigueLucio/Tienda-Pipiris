@@ -2,11 +2,12 @@ package com.piris.tienda.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.piris.tienda.dto.InventarioRequestDTO;
-import com.piris.tienda.dto.InventarioResponseDTO;
+import com.piris.tienda.dto.inventario.InventarioRequestDTO;
+import com.piris.tienda.dto.inventario.InventarioResponseDTO;
 import com.piris.tienda.mapper.InventarioMapper;
 import com.piris.tienda.mapper.InventarioMapperImpl;
 import com.piris.tienda.model.Inventario;
@@ -22,33 +23,35 @@ import jakarta.transaction.Transactional;
 @Service
 @Transactional
 public class InventarioServiceImpl implements InventarioService{
-
-    private final InventarioMapperImpl inventarioMapperImpl;
-
+	
 	private final InventarioRepository inventarioRepo;
 	private final ProductoRepository productoRepo;
 	private final InventarioMapper inventarioMapper;
 	
 	public InventarioServiceImpl(InventarioRepository inventarioRepo, ProductoRepository productoRepo,
-			InventarioMapper inventarioMapper, InventarioMapperImpl inventarioMapperImpl) {
+			InventarioMapper inventarioMapper) {
 		this.inventarioRepo = inventarioRepo;
 		this.productoRepo = productoRepo;
 		this.inventarioMapper = inventarioMapper;
-		this.inventarioMapperImpl = inventarioMapperImpl;
 	}
 
 	@Override
-	public List<Inventario> getInventariosDeProducto(Long productoId) {
+	public List<InventarioResponseDTO> getInventariosDeProducto(Long productoId) {
 		
-		return inventarioRepo.findByIdProductoId(productoId);
-		
+		List<Inventario> inventarios = inventarioRepo.findByIdProductoId(productoId);
+		return	inventarios.stream()
+				.map(inventarioMapper::enDTO)
+				.collect(Collectors.toList());
+				
 	}
 
 	@Override
-	public Inventario getInventario(Long productoId, String talla, String color) {
+	public InventarioResponseDTO getInventario(Long productoId, String talla, String color) {
 
-		return inventarioRepo.findByIdProductoIdAndIdTallaAndIdColor(productoId, talla, color)
-	            .orElseThrow(() -> new EntityNotFoundException("Inventario no encontrado"));
+		Inventario inv = inventarioRepo.findByIdProductoIdAndIdTallaAndIdColor(productoId, talla, color)
+        .orElseThrow(() -> new EntityNotFoundException("Inventario no encontrado"));
+		
+		return inventarioMapper.enDTO(inv);
 	}
 
 	@Override
@@ -57,23 +60,24 @@ public class InventarioServiceImpl implements InventarioService{
 		Producto p = productoRepo.findById(requestDTO.getProductoId())
 				.orElseThrow(() -> new EntityNotFoundException("Producto no encontrado"));
 		
-		
 		Inventario inv = Inventario.of(p, requestDTO.getTalla(), requestDTO.getColor(), requestDTO.getStock());
 		
-		Inventario creado = inventarioRepo.save(inv);
+		inv = inventarioRepo.save(inv);
 		
-		return inventarioMapper.enDTO(creado);
+		return inventarioMapper.enDTO(inv);
 		
 	}
 	
 	@Override
-	public Inventario actualizarStock(Long productoId, String talla, String color, int nuevoStock) {
+	public InventarioResponseDTO actualizarStock(Long productoId, String talla, String color, int nuevoStock) {
 		
-		Inventario inventario = getInventario(productoId, talla, color);
-        inventario.setStock(nuevoStock);
-        inventario.setUltimaActualizacion(LocalDateTime.now());
-        return inventarioRepo.save(inventario);
-        
+		Inventario inv = findInventario(productoId, talla, color);
+		inv.setStock(nuevoStock);
+		inv.setUltimaActualizacion(LocalDateTime.now());
+		inv = inventarioRepo.save(inv);
+		
+		return inventarioMapper.enDTO(inv);
+		
 	}
 
 	@Override
@@ -83,5 +87,14 @@ public class InventarioServiceImpl implements InventarioService{
         inventarioRepo.deleteById(id);
 		
 	}
+	
+	//METODOS INTERNOS
+	
+	//METODO PARA BUSCAR EL INVENTARIO
+	private Inventario findInventario(Long productoId, String talla, String color) {
+	    return inventarioRepo.findByIdProductoIdAndIdTallaAndIdColor(productoId, talla, color)
+	        .orElseThrow(() -> new EntityNotFoundException("Inventario no encontrado"));
+	}
+	
 
 }

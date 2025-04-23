@@ -26,11 +26,10 @@ public interface ProductoMapper {
 	
 	
 	@Named("productoSimple")
+	@Mapping(source = "idProducto", target = "idProducto")
 	@Mapping(source = "categoria.nombre", target = "categoria")
+	@Mapping(source = "modelo", target = "modelo")
 	@Mapping(source = "marca.nombre", target = "marca")
 	ProductoSimpleResponseDTO enSimpleDTO(Producto producto);
-	
-	@IterableMapping(qualifiedByName = "productoSimple")
-	List<ProductoSimpleResponseDTO> enSimpleResponseDTOs(List<Producto> productos);
 	
 }
