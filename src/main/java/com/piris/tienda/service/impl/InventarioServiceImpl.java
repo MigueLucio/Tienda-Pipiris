@@ -11,6 +11,7 @@ import com.piris.tienda.dto.inventario.InventarioRequestDTO;
 import com.piris.tienda.dto.inventario.InventarioResponseDTO;
 import com.piris.tienda.dto.inventario.InventarioVarianteDTO;
 import com.piris.tienda.mapper.InventarioMapper;
+import com.piris.tienda.mapper.InventarioWrapperMapper;
 import com.piris.tienda.mapper.ProductoMapper;
 import com.piris.tienda.model.Inventario;
 import com.piris.tienda.model.InventarioId;
@@ -30,13 +31,15 @@ public class InventarioServiceImpl implements InventarioService{
 	private final ProductoRepository productoRepo;
 	private final InventarioMapper inventarioMapper;
 	private final ProductoMapper productoMapper;
+	private final InventarioWrapperMapper inventarioWrapperMapper;
 	
 	public InventarioServiceImpl(InventarioRepository inventarioRepo, ProductoRepository productoRepo,
-			InventarioMapper inventarioMapper, ProductoMapper productoMapper) {
+			InventarioMapper inventarioMapper, ProductoMapper productoMapper, InventarioWrapperMapper inventarioWrapperMapper) {
 		this.inventarioRepo = inventarioRepo;
 		this.productoRepo = productoRepo;
 		this.inventarioMapper = inventarioMapper;
 		this.productoMapper = productoMapper;
+		this.inventarioWrapperMapper = inventarioWrapperMapper;
 	}
 
 	@Override
@@ -44,24 +47,10 @@ public class InventarioServiceImpl implements InventarioService{
 		
 		List<Inventario> invs = inventarioRepo.findByIdProductoId(productoId);
 		
-		if(invs.isEmpty()) throw new EntityNotFoundException("No hay inventario para el producto con id " + productoId );
+		if(invs.isEmpty()) 
+			throw new EntityNotFoundException("No hay inventario para el producto con id " + productoId );
 		
-		ProductoSimpleResponseDTO prodDTO = productoMapper.enSimpleDTO(invs.get(0).getProducto());
-		
-		List<InventarioVarianteDTO> variants = invs.stream().map(inv -> {
-			InventarioVarianteDTO v = new InventarioVarianteDTO();
-			v.setTalla(inv.getId().getTalla());
-			v.setColor(inv.getId().getColor());
-			v.setStock(inv.getStock());
-			v.setUltimaActualizacion(inv.getUltimaActualizacion());
-			return v;
-		}).toList();
-		
-		InventarioPorProductoDTO wrapper = new InventarioPorProductoDTO();
-		wrapper.setProducto(prodDTO);
-		wrapper.setInventario(variants);
-		
-		return wrapper;
+		return inventarioWrapperMapper.paraDto(invs);
 		
 	}
 
